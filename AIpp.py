@@ -1,5 +1,6 @@
 import streamlit as st
 import streamlit_image_select as sti
+import os
 import requests
 import json
 import base64
@@ -12,7 +13,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 # ==========================================
 # 1. 核心配置與資料庫邏輯
 # ==========================================
-OPENROUTER_API_KEY = ""
+OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
 PRIMARY_BRAIN = "openai/gpt-oss-120b"
 FUSE_1 = "deepseek/deepseek-v3.2"
 FUSE_2 = "meta-llama/llama-3.3-70b-instruct"
@@ -277,7 +278,7 @@ with col2:
             st.markdown("### ***3.2 Prompt function***")
             st.info("Below are valid prompt formats for your reference.")
             st.image("AImage1.png", caption="Demo of Language, Currency and Destination Setting")
-            st.image
+            #st.image
             #st.image()要包括AI自動，語言，其他貨幣，航班代碼；0預算，跨國旅行，圖像生成
 
 
@@ -330,7 +331,7 @@ if side_submit or user_input:
         placeholders = "\n".join([f"{i + 1}. [描述]" for i in range(max_images)])
         prompt_instruction = f"\n\n請在結束後緊接著輸出此格式：\n===IMAGE_PROMPTS===\n{placeholders}\n===IMAGE_PROMPTS_END==="
 
-    query = f"請用{user_lang}規劃從 {city_from} 到 {city_to} 的 {days} 天行程。主題是{",".join(theme)}預算 {budget}{user_currency}。優先滿足這些需求：{user_input}{prompt_instruction}"
+    query = f"請用{user_lang}規劃從 {city_from} 到 {city_to} 的 {days} 天行程。主題是{','.join(theme)}預算 {budget}{user_currency}。優先滿足這些需求：{user_input}{prompt_instruction}"
 
     try:
         raw_itinerary, model_used = call_ai_with_fuse(query, model_map[selected_mode], SYSTEM_PROMPT)
