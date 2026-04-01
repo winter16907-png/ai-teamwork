@@ -1,0 +1,5 @@
+streamlit
+streamlit-image-select
+requests
+tenacity
+Pillow
