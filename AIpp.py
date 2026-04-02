@@ -9,6 +9,7 @@ import sqlite3
 import io
 from datetime import datetime
 from tenacity import retry, stop_after_attempt, wait_fixed
+import uuid
 
 # ==========================================
 # 1. 核心配置與資料庫邏輯
@@ -26,9 +27,10 @@ def init_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS history 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  time TEXT, destination TEXT, itinerary TEXT, 
-                  images_json TEXT, model TEXT, days INTEGER)''')
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                      time TEXT, destination TEXT, itinerary TEXT, 
+                      images_json TEXT, model TEXT, days INTEGER,
+                      user_id TEXT)''')
     conn.commit()
     conn.close()
 
@@ -45,10 +47,9 @@ def save_new_record_to_db(record):
 
 
 def update_db_images(itinerary_text, images_bytes_list):
-    """更新資料庫中的圖片紀錄"""
+    """更新資料庫中的圖片紀錄 (同步上傳)"""
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    # 將 bytes 轉為 base64 字串以便存入 JSON
     encoded_images = [base64.b64encode(img).decode('utf-8') for img in images_bytes_list]
     c.execute("UPDATE history SET images_json = ? WHERE itinerary = ?",
               (json.dumps(encoded_images), itinerary_text))
@@ -56,17 +57,17 @@ def update_db_images(itinerary_text, images_bytes_list):
     conn.close()
 
 
-def load_history_from_db():
-    """從資料庫讀取所有歷史紀錄"""
+def load_history_from_db(user_id):
+    """從資料庫讀取『僅屬於該用戶』的歷史紀錄"""
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("SELECT time, destination, itinerary, images_json, model, days FROM history ORDER BY id DESC")
+    # 這裡加入 WHERE user_id = ? 實現隱私區隔
+    c.execute("SELECT time, destination, itinerary, images_json, model, days FROM history WHERE user_id = ? ORDER BY id DESC", (user_id,))
     rows = c.fetchall()
     conn.close()
 
     history = []
     for row in rows:
-        # 將 base64 字串轉回 bytes
         decoded_images = [base64.b64decode(img_str) for img_str in json.loads(row[3])]
         history.append({
             "time": row[0], "destination": row[1], "itinerary": row[2],
@@ -75,14 +76,13 @@ def load_history_from_db():
     return history
 
 
-def delete_all_history():
-    """清空資料庫"""
+def delete_user_history(user_id):
+    """只刪除當前用戶的紀錄"""
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("DELETE FROM history")
+    c.execute("DELETE FROM history WHERE user_id = ?", (user_id,))
     conn.commit()
     conn.close()
-
 
 # 初始化資料庫
 init_db()
@@ -90,6 +90,9 @@ init_db()
 st.set_page_config(page_title="AI Trip Planner", layout="wide", page_icon="✈️")
 
 # 初始化時先從資料庫讀取，而非建立空列表
+if "user_uuid" not in st.session_state:
+    st.session_state.user_uuid = str(uuid.uuid4())
+
 if "history" not in st.session_state:
     st.session_state.history = load_history_from_db()
 
@@ -186,7 +189,7 @@ with st.sidebar:
     side_submit = st.button("🚀 Start Planning", use_container_width=True, type="primary")
     st.divider()
     if st.button("🗑️ Clear History", use_container_width=True):
-        delete_all_history()
+        delete_user_history()
         st.session_state.history = []
         st.rerun()
 
@@ -324,7 +327,7 @@ if side_submit or user_input:
     預算是0的意思是需要你提供一個舒適合理但不奢華的預算供用戶參考，用戶真正的預算並不是0
     標題及副標題應該是黑色粗體字體。副標題比普通文字大，標題比副標題大
     必須使用{user_currency}進行所有金額的計算
-    42天或以上的行程無需過於詳細，避免token用盡而被截斷"""
+    56天或以上的行程無需過於詳細，避免token用盡而被截斷"""
 
     status = st.status("Planning...", expanded=True)
     prompt_instruction = ""
@@ -349,7 +352,7 @@ if side_submit or user_input:
 
         # 1. 存入資料庫
         save_new_record_to_db(new_record)
-        # 2. 存入當前 Session 顯示
+        # 2. 存入用戶端緩存
         st.session_state.history.insert(0, new_record)
 
         display_itinerary = re.split(r"===IMAGE_PROMPTS===", raw_itinerary)[0].strip()
