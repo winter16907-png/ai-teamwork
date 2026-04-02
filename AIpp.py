@@ -176,7 +176,7 @@ with st.sidebar:
     city_from = st.text_input("Departure", value="Hong Kong", key="input_city_from")
     city_to = st.text_input("Destination", key="input_city_to")
     days = st.number_input("Days", min_value=1, value=2, key="input_days")
-    theme = st.pills(label="Theme", options=["🌇 Take Photos", "🍕 Enjoy Cuisines", "🎢 Theme Park", "🏛️ Museum"],
+    theme = st.pills(label="Theme", options=["🌇 Take Photos", "🍕 Enjoy Cuisines", "🎢 Theme Park", "🏛️ Museum", "🛍️ shopping"],
                      selection_mode="multi")
     budget = st.number_input(f"Budget ({user_currency})", step=2000, key="budget_input")
     st.button("Predict budget for me", use_container_width=True, on_click=reset_budget_callback)
@@ -197,6 +197,7 @@ col1, col2 = st.columns([0.9, 0.1]) # 調整比例讓問號靠右
 
 with col1:
     st.title("✈️ AI Trip Planner Pro")
+    st.write(">developed by kalokwong6's team")
 
 with col2:
     with st.popover("❓"):
@@ -305,7 +306,7 @@ if side_submit or user_input:
     SYSTEM_PROMPT = f"""請嚴格遵守以下守則：
     1.框架方面：
     出發地到目的地的簽證/護照等要求
-    如果預算不是0，寫出匯率（以{user_currency}兌換目的地的貨幣。例如30,000 HKD ≈ 585,000 JPY），否則寫出以寫出1{user_currency}比幾當地貨幣
+    如果預算不是0，寫出匯率（以{user_currency}兌換目的地的貨幣。例如30,000 HKD ≈ 585,000 JPY），否則寫出以寫出1{user_currency}比幾當地貨幣，必須標註「The exchange rate may vary, and the actual exchange rate will be based on the bank's rate.」
     簡單寫出用戶的預算是寬鬆/合理/緊湊，附上1-3句解釋
     酒店（建議推薦住宿費用包含早餐的酒店，附上價格，位置是否方便，評價等）
     機票（優先選擇不需轉機的航班，附上起飛日期，來回機票價格，航空公司等，如要轉機，列出所有中轉站），必須標註「The flight number is for reference only; please refer to the actual booking.」
