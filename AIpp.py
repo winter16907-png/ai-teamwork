@@ -94,7 +94,7 @@ if "user_uuid" not in st.session_state:
     st.session_state.user_uuid = str(uuid.uuid4())
 
 if "history" not in st.session_state:
-    st.session_state.history = load_history_from_db()
+    st.session_state.history = load_history_from_db(st.session_state.user_uuid)
 
 
 def reset_budget_callback():
