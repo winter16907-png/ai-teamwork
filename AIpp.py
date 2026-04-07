@@ -272,75 +272,94 @@ with st.sidebar:
 col1, col2 = st.columns([0.9, 0.1]) # 調整比例讓問號靠右
 
 with col1:
-
+    # === 修改後的 CSS 部分 ===
     # 定義自定義 CSS
     glass_style = """
         <style>
-            /* 1. 中間的磨砂玻璃容器 */
+            /* 1. 中間的磨砂玻璃容器 - 我們在這裡加入提示文字 */
             .glass-container {
-                background: rgba(255, 255, 255, 0.2); 
-                backdrop-filter: blur(20px);         
-                -webkit-backdrop-filter: blur(20px); 
-                border-radius: 15px;                 
-                border: 1px solid rgba(255, 255, 255, 0.3); 
-                padding: 25px;                       /* 稍微增加內間距讓視覺更舒服 */
-                color: #31333F;                      
-                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); 
-                margin-bottom: 20px;                 /* 增加與下方內容的間距 */
+                /* 背景與透明度 */
+                background: rgba(255, 255, 255, 0.15) !important; /* 透明度：0.15 */
+                backdrop-filter: blur(20px) !important;         /* 模糊度 */
+                -webkit-backdrop-filter: blur(20px) !important; 
+
+                /* 圓角與邊框 */
+                border-radius: 20px !important;                 
+                border: 1px solid rgba(255, 255, 255, 0.2) !important; /* 邊框線 */
+
+                /* 間距 (上下 左右) */
+                padding: 30px 45px !important;                 /* 這裡調上下外部間距 */
+
+                /* 文字顏色 */
+                color: #31333F !important;                      
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important; /* 淡淡的陰影 */
             }
 
-            /* 2. 調整 Sidebar (側邊欄) 的顏色與透明度 */
-            [data-testid="stSidebar"] {
-                background-color: rgba(255, 252, 240, 0.9) !important; /* 淡淡的米黃色，配地圖很搭 */
-                border-right: 1px solid rgba(0,0,0,0.05);
-            }
-
-            /* 讓側邊欄上方的 Tabs 也變透明感 */
-            [data-testid="stSidebar"] .stTabs {
-                background-color: transparent !important;
-            }
-
-            /* 3. 調整問號按鈕 (Popover) 的外觀 */
-            /* 針對 popover 的按鈕本身 */
-            button[data-testid="stPopoverInternal"] {
-                background-color: rgba(255, 255, 255, 0.5) !important;
-                border: 1px solid rgba(255, 255, 255, 0.5) !important;
-                backdrop-filter: blur(10px);
-                border-radius: 50% !important; /* 讓它變圓形更像幫助按鈕 */
-                width: 40px;
-                height: 40px;
-            }
-
-            /* 調整 popover 彈出視窗的寬度和陰影 */
-            div[data-testid="stPopoverBody"] {
-                background-color: rgba(255, 255, 255, 0.95) !important;
-                border-radius: 15px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            }
-
-            /* 4. 修正標題與副標題的間距 */
+            /* 2. 針對容器內部的文字調整 */
             .glass-container h1 {
-                margin-bottom: 0px !important; 
+                margin-bottom: 0px !important;
                 padding-bottom: 0px !important;
             }
             .glass-container blockquote {
                 margin-top: 5px !important;
-                border-left: 3px solid rgba(0,0,0,0.1) !important; /* 淡淡的左邊框 */
-                color: rgba(0,0,0,0.6) !important;
+                border-left: none !important; /* 去掉原本的引言線 */
+                padding-left: 0px !important;
+                color: rgba(0,0,0,0.5) !important; /* 副標題顏色淡化 */
+                font-size: 0.95rem !important;
+            }
+
+            /* 3. 【核心修正】針對問號PopOver按鈕的單獨調整 (使其變圓) */
+            /* 針對 st.popover 的按鈕本身 */
+            button[data-testid="stPopoverInternal"] {
+                /* 使其變為圓形 */
+                border-radius: 50% !important; /* 圓角百分比，使其變圓 */
+                width: 40px !important;          /* 強制按鈕寬度 */
+                height: 40px !important;         /* 強制按鈕高度 */
+
+                /* 背景與透明度 */
+                background-color: rgba(255, 255, 255, 0.6) !important; /* 顏色與透明度 */
+                backdrop-filter: blur(10px) !important;                 /* 模糊 */
+
+                /* 邊框 */
+                border: 1px solid rgba(255, 255, 255, 0.4) !important;
+
+                /* 上下間距 (外部) */
+                margin-top: 10px !important;
+                margin-bottom: 10px !important;
+
+                /* 強制問號文字居中 */
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-size: 1.2rem !important;
+
+                /* 讓它有漂浮感 */
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+            }
+
+            /* 4. 側邊欄 Sidebar 的顏色與透明度修正 */
+            [data-testid="stSidebar"] {
+                background-color: rgba(255, 252, 240, 0.9) !important; /* 配地圖的復古米色 */
+                border-right: 1px solid rgba(0,0,0,0.05);
             }
         </style>
         """
+
     # 注入 CSS
     st.markdown(glass_style, unsafe_allow_html=True)
 
+    # === 【核心步驟 1】移除原本的 st.info，改為在這裡內嵌提示文字 ===
     # 使用容器
     st.markdown("""
-        <div class="glass-container">
-            <h1>✈️ AI Trip Planner Pro</h1>
-            <blockquote>developed by kalokwong6's team</blockquote>
-            
-        </div>
-    """, unsafe_allow_html=True)
+            <div class="glass-container">
+                <h1>✈️ AI Trip Planner Pro</h1>
+                <blockquote>developed by kalokwong6's team</blockquote>
+                <p style="margin-top: 20px; font-size: 0.8rem; color: #004085; opacity: 0.7;">
+                    ℹ️ This is an AI, and the information provided may be inaccurate.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+
     try:
         image_no = rnd.randint(1,2)
         if image_no == 1:
