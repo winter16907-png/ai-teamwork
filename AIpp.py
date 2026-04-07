@@ -291,8 +291,9 @@ with col1:
     # 使用容器
     st.markdown("""
         <div class="glass-container">
-            <h2>✈️ AI Trip Planner Pro</h2>
-            <p>這是一個具有半透明磨砂玻璃效果的容器樣式。</p>
+            <h1>✈️ AI Trip Planner Pro</h1>
+            <blockquote>developed by kalokwong6's team</blockquote>
+            
         </div>
     """, unsafe_allow_html=True)
     try:
@@ -304,7 +305,6 @@ with col1:
     except FileNotFoundError:
         # 如果找不到圖片，就在網頁顯示一個小警告 (選用)
         st.warning("⚠️ Unable to find background.png, unable to set background image. Please check if the file exists.")
-    st.write(">developed by kalokwong6's team")
     st.info("This is an AI, and the information provided may be inaccurate.")
     st.image("trip_1.png",caption=" ")
     st.image("trip_1-2.png",caption=" ")
