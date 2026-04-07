@@ -282,7 +282,7 @@ with col1:
             border-radius: 15px;                 /* 圓角 */
             border: 1px solid rgba(255, 255, 255, 0.3); /* 邊框線 */
             padding: 20px;
-            color: #0000CC;                      /* 字體顏色 */
+            color: #31333F;                      /* 字體顏色 */
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* 陰影增添立體感 */
         }
     </style>
