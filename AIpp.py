@@ -201,10 +201,11 @@ col1, col2 = st.columns([0.9, 0.1]) # 調整比例讓問號靠右
 with col1:
     st.title("✈️ AI Trip Planner Pro")
     st.write(">developed by kalokwong6's team")
-    st.image("trip_1.png")
-    st.image("trip_1-2.png")
-    st.image("trip_1-3.png")
-    st.image("trip_1-4.png")
+    st.info("This is an AI, and the information provided may be inaccurate.")
+    st.image("trip_1.png",caption="")
+    st.image("trip_1-2.png",caption="")
+    st.image("trip_1-3.png",caption="")
+    st.image("trip_1-4.png",caption="")
 
 with col2:
     with st.popover("❓"):
