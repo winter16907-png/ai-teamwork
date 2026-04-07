@@ -229,6 +229,32 @@ with col1:
     st.title("✈️ AI Trip Planner Pro")
     st.write(">developed by kalokwong6's team")
     st.info("This is an AI, and the information provided may be inaccurate.")
+    # 定義自定義 CSS
+    glass_style = """
+    <style>
+        .glass-container {
+            background: rgba(255, 255, 255, 0.2); /* 背景半透明 */
+            backdrop-filter: blur(10px);         /* 背景模糊 */
+            -webkit-backdrop-filter: blur(10px); /* 兼容 Safari */
+            border-radius: 15px;                 /* 圓角 */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* 邊框線 */
+            padding: 20px;
+            color: #31333F;                      /* 字體顏色 */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* 陰影增添立體感 */
+        }
+    </style>
+    """
+
+    # 注入 CSS
+    st.markdown(glass_style, unsafe_allow_html=True)
+
+    # 使用容器
+    st.markdown("""
+        <div class="glass-container">
+            <h2>AI Trip Planner Pro</h2>
+            <p>這是一個具有半透明磨砂玻璃效果的容器樣式。</p>
+        </div>
+    """, unsafe_allow_html=True)
     st.image("trip_1.png",caption=" ")
     st.image("trip_1-2.png",caption=" ")
     st.image("trip_1-3.png",caption=" ")
