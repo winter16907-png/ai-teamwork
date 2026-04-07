@@ -253,14 +253,15 @@ with st.sidebar:
 
                     st.caption(f"Model: {item['model'].split('/')[-1]}")
 
+        else:
+            st.info("No history yet. Start your first trip!")
+
 
         st.divider()
         if st.button("🗑️ Clear History", use_container_width=True):
             delete_user_history()
             st.session_state.history = []
             st.rerun()
-        else:
-            st.info("No history yet. Start your first trip!")
 
 
 
