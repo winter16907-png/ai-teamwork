@@ -277,7 +277,7 @@ with col1:
     <style>
         .glass-container {
             background: rgba(255, 255, 255, 0.2); /* 背景半透明 */
-            backdrop-filter: blur(10px);         /* 背景模糊 */
+            backdrop-filter: blur(100px);         /* 背景模糊 */
             -webkit-backdrop-filter: blur(10px); /* 兼容 Safari */
             border-radius: 15px;                 /* 圓角 */
             border: 1px solid rgba(255, 255, 255, 0.3); /* 邊框線 */
