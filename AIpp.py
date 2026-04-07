@@ -268,22 +268,6 @@ with st.sidebar:
 col1, col2 = st.columns([0.9, 0.1]) # 調整比例讓問號靠右
 
 with col1:
-    st.title("✈️ AI Trip Planner Pro")
-    try:
-        img_base64 = get_base64_of_bin_file('background.png')
-
-        # 調用函數，並設定透明度為 0.15 (15% 的不透明度，看起來非常淡)
-        set_transparent_bg_via_base64(img_base64, opacity=0.15)
-
-    except FileNotFoundError:
-        # 如果找不到圖片，就在網頁顯示一個小警告 (選用)
-        st.warning("⚠️ Unable to find background.png, unable to set background image. Please check if the file exists.")
-    st.write(">developed by kalokwong6's team")
-    st.info("This is an AI, and the information provided may be inaccurate.")
-    st.image("trip_1.png",caption=" ")
-    st.image("trip_1-2.png",caption=" ")
-    st.image("trip_1-3.png",caption=" ")
-    st.image("trip_1-4.png",caption=" ")
 
     # 定義自定義 CSS
     glass_style = """
@@ -307,10 +291,26 @@ with col1:
     # 使用容器
     st.markdown("""
         <div class="glass-container">
-            <h2>AI Trip Planner Pro</h2>
+            <h2>✈️ AI Trip Planner Pro</h2>
             <p>這是一個具有半透明磨砂玻璃效果的容器樣式。</p>
         </div>
     """, unsafe_allow_html=True)
+    try:
+        img_base64 = get_base64_of_bin_file('background.png')
+
+        # 調用函數，並設定透明度為 0.15 (15% 的不透明度，看起來非常淡)
+        set_transparent_bg_via_base64(img_base64, opacity=0.15)
+
+    except FileNotFoundError:
+        # 如果找不到圖片，就在網頁顯示一個小警告 (選用)
+        st.warning("⚠️ Unable to find background.png, unable to set background image. Please check if the file exists.")
+    st.write(">developed by kalokwong6's team")
+    st.info("This is an AI, and the information provided may be inaccurate.")
+    st.image("trip_1.png",caption=" ")
+    st.image("trip_1-2.png",caption=" ")
+    st.image("trip_1-3.png",caption=" ")
+    st.image("trip_1-4.png",caption=" ")
+
 
 with col2:
     with st.popover("❓"):
