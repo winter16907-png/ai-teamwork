@@ -10,6 +10,7 @@ import io
 from datetime import datetime
 from tenacity import retry, stop_after_attempt, wait_fixed
 import uuid
+import random as rnd
 
 # ==========================================
 # 1. 核心配置與資料庫邏輯
@@ -300,7 +301,11 @@ with col1:
         </div>
     """, unsafe_allow_html=True)
     try:
-        img_base64 = get_base64_of_bin_file('background2.png')
+        image_no = rnd.randint(1,2)
+        if image_no == 1:
+            img_base64 = get_base64_of_bin_file('background.png')
+        elif image_no == 2:
+            img_base64 = get_base64_of_bin_file('background2.png')
 
         # 調用函數，並設定透明度為 0.15 (15% 的不透明度，看起來非常淡)
         set_transparent_bg_via_base64(img_base64, opacity=0.3)
