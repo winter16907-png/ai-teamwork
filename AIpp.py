@@ -315,8 +315,8 @@ with col2:
             st.markdown("### ***3.2 Prompt function***")
             st.info("Below are valid prompt formats for your reference.")
             st.image("AImage1.png", caption="Demo of Language, Currency and Destination Setting")
-            #st.image
-            #st.image()要包括AI自動，語言，其他貨幣，航班代碼；0預算，跨國旅行，圖像生成
+            st.image("AImage2.png", caption="A prompt demo")
+            st.image("AImage3.png", caption="An output demo")
 
 
 user_input = st.chat_input("Enter travel details...")
