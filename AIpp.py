@@ -317,7 +317,7 @@ with col1:
                 height: 40px !important;         /* 強制按鈕高度 */
 
                 /* 背景與透明度 */
-                background-color: rgba(255, 255, 255, 0.6) !important; /* 顏色與透明度 */
+                background-color: rgba(255, 255, 255, 0.8) !important; /* 顏色與透明度 */
                 backdrop-filter: blur(10px) !important;                 /* 模糊 */
 
                 /* 邊框 */
