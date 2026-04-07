@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit_image_select as sti
 import os
 import requests
 import json
