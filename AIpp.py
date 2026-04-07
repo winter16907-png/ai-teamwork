@@ -206,8 +206,8 @@ with st.sidebar:
                 backdrop-filter: blur(20px);         /* 背景模糊 */
                 -webkit-backdrop-filter: blur(20px); /* 兼容 Safari */
                 border-radius: 15px;                 /* 圓角 */
-                border: 1px solid rgba(255, 255, 255, 0.3); /* 邊框線 */
-                padding: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.1); /* 邊框線 */
+                padding: 10px;
                 color: #31333F;                      /* 字體顏色 */
                 box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* 陰影增添立體感 */
             }
