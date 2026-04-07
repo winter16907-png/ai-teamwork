@@ -154,7 +154,7 @@ def generate_flux_image(prompt: str, aspect_ratio: str = "16:9"):
 # 3. 側邊欄 UI
 # ==========================================
 with st.sidebar:
-    page1, page2 = st.tabs["💻 Settings", "⏰ History"]
+    page1, page2 = st.tabs("💻 Settings", "⏰ History")
     with page1:
         st.header("⚙️ Settings")
         model_map = {"Auto-Fuse": [PRIMARY_BRAIN, FUSE_1, FUSE_2], "GPT-4o (Fastest)": [PRIMARY_BRAIN], "DeepSeek V3 (More accurate)": [FUSE_1]}
