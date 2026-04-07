@@ -513,7 +513,6 @@ if st.session_state.temp_input and not user_input:
     # 清空緩存避免無限循環
     st.session_state.temp_input = ""
 
-user_input = st.chat_input("Enter travel details...")
 
 if side_submit or user_input:
     # 如果是從側邊欄觸發且沒有聊天輸入，給一個預設提示或檢查必填項
