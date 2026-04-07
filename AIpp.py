@@ -303,11 +303,11 @@ with col1:
         image_no = rnd.randint(1,2)
         if image_no == 1:
             img_base64 = get_base64_of_bin_file('background.png')
+            set_transparent_bg_via_base64(img_base64, opacity=0.5)
         elif image_no == 2:
             img_base64 = get_base64_of_bin_file('background2.png')
+            set_transparent_bg_via_base64(img_base64, opacity=0.3)
 
-        # 調用函數，並設定透明度為 0.15 (15% 的不透明度，看起來非常淡)
-        set_transparent_bg_via_base64(img_base64, opacity=0.3)
 
     except FileNotFoundError:
         # 如果找不到圖片，就在網頁顯示一個小警告 (選用)
