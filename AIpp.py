@@ -300,7 +300,7 @@ with col1:
         img_base64 = get_base64_of_bin_file('background.png')
 
         # 調用函數，並設定透明度為 0.15 (15% 的不透明度，看起來非常淡)
-        set_transparent_bg_via_base64(img_base64, opacity=0.15)
+        set_transparent_bg_via_base64(img_base64, opacity=0.25)
 
     except FileNotFoundError:
         # 如果找不到圖片，就在網頁顯示一個小警告 (選用)
