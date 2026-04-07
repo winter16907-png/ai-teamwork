@@ -294,7 +294,7 @@ with col1:
     # 使用容器
     st.markdown("""
         <div class="glass-container">
-            <h1>✈️ AI Trip Planner Pro</h1>
+            <h1><b>✈️ AI Trip Planner Pro</b></h1>
             <blockquote>developed by kalokwong6's team</blockquote>
             
         </div>
