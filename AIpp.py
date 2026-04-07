@@ -373,7 +373,6 @@ with col1:
     except FileNotFoundError:
         # 如果找不到圖片，就在網頁顯示一個小警告 (選用)
         st.warning("⚠️ Unable to find background.png, unable to set background image. Please check if the file exists.")
-    st.info("This is an AI, and the information provided may be inaccurate.")
     #st.image("trip_1.png",caption=" ")
     #st.image("trip_1-2.png",caption=" ")
     #st.image("trip_1-3.png",caption=" ")
@@ -554,9 +553,9 @@ if side_submit or user_input:
                                 st.download_button("💾 Download", io.BytesIO(img_bytes), f"trip_{i + 1}.png",
                                                    "image/png", key=f"dl_{hash(p)}")
             else:
-                st.warning("AI 輸出標籤但內容格式不正確。")
+                st.warning("AI outputs tags but the content format is incorrect.")
         elif max_images > 0:
-            st.error("AI 完全沒有輸出圖片描述標籤。")
+            st.error("AI does not output any image description tags.")
         st.success("Trip saved permanently!")
     except Exception as e:
         st.error(f"Error: {e}")
