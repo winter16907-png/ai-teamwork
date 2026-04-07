@@ -481,19 +481,19 @@ if "temp_input" not in st.session_state:
 cols = st.columns(4)
 with cols[0]:
     if st.button("🇯🇵 Tokyo & Osaka", use_container_width=True):
-        set_prompt("我想去東京和大阪，請安排包含新幹線轉乘的 3 天行程。", "Tokyo")
+        set_prompt("I want to go to Tokyo and Osaka, please arrange a 3-day itinerary that includes a Shinkansen transfer.", "Tokyo")
         st.rerun()
 with cols[1]:
     if st.button("🇪🇺 Europe Tour", use_container_width=True):
-        set_prompt("我想去英法意德芬五國，預算比較寬裕，請規劃一個月的深度遊。", "London")
+        set_prompt("I want to visit England, France, Italy, Germany, and Finland for a month, with a relatively generous budget. Please plan a detailed itinerary.", "London")
         st.rerun()
 with cols[2]:
     if st.button("🇱🇻 Baltic States", use_container_width=True):
-        set_prompt("我想去波羅的海三小國，重點放在里加的建築和歷史。", "Riga")
+        set_prompt("I want to visit the three Baltic states and experience the culture of Northern Europe.", "Riga")
         st.rerun()
 with cols[3]:
     if st.button("🏝️ Hawaii Island", use_container_width=True):
-        set_prompt("夏威夷跳島建議，希望包含水上活動和火山公園。", "Hawaii")
+        set_prompt("Hawaii island-hopping suggestions, including water activities and volcanic parks.", "Hawaii")
         st.rerun()
 
 # 將 chat_input 的值與 session_state 綁定
