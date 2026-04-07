@@ -231,11 +231,6 @@ with st.sidebar:
         max_images = st.slider("🖼️Images count", 0, 2, 1)
         image_aspect = st.selectbox("Ratio", ["1:1", "16:9", "4:3"], index=1)
         side_submit = st.button("🚀 Start Planning", use_container_width=True, type="primary")
-        st.divider()
-        if st.button("🗑️ Clear History", use_container_width=True):
-            delete_user_history()
-            st.session_state.history = []
-            st.rerun()
 
     with page2:
         st.header("📜 Past Itineraries")
@@ -257,6 +252,13 @@ with st.sidebar:
                             cols[i % 2].image(img, use_container_width=True)
 
                     st.caption(f"Model: {item['model'].split('/')[-1]}")
+
+
+        st.divider()
+        if st.button("🗑️ Clear History", use_container_width=True):
+            delete_user_history()
+            st.session_state.history = []
+            st.rerun()
         else:
             st.info("No history yet. Start your first trip!")
 
@@ -388,6 +390,7 @@ with col2:
             st.markdown("## 3.User Interface and Other Functions")
             st.markdown("### 3.1 Historical data")
             st.write(">Everytime our text and each image is generated, the record will be saved")
+
             st.write("We use sqlite3 to save records, data remains even if you reload the website")
             st.info("Click the 'Clear History' button at the bottom of the slider to delete these records.")
             st.markdown("### ***3.2 Prompt function***")
