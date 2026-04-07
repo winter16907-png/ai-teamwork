@@ -154,44 +154,71 @@ def generate_flux_image(prompt: str, aspect_ratio: str = "16:9"):
 # 3. 側邊欄 UI
 # ==========================================
 with st.sidebar:
-    st.header("⚙️ Settings")
-    model_map = {"Auto-Fuse": [PRIMARY_BRAIN, FUSE_1, FUSE_2], "GPT-4o": [PRIMARY_BRAIN], "DeepSeek V3": [FUSE_1]}
-    selected_mode = st.selectbox("AI choice", list(model_map.keys()), key="model_selection_v1")
-    lang_options = ["繁體中文", "简体中文", "English", "Other"]
-    selected_lang = st.selectbox("Language", lang_options, index=0)
-    currency_options = ["CNY", "HKD", "JPY", "MOP", "NTD", "USD", "Other"]
-    selected_curr = st.selectbox("Currency", currency_options, index=1)
+    page1, page2 = st.tabs(["💻 Settings", "⏰ History"])
+    with page1:
+        st.header("⚙️ Settings")
+        model_map = {"Auto-Fuse": [PRIMARY_BRAIN, FUSE_1, FUSE_2], "GPT-4o (Fastest)": [PRIMARY_BRAIN], "DeepSeek V3 (More accurate)": [FUSE_1]}
+        selected_mode = st.selectbox("AI choice", list(model_map.keys()), key="model_selection_v1")
+        lang_options = ["繁體中文", "简体中文", "English", "Other"]
+        selected_lang = st.selectbox("Language", lang_options, index=0)
+        currency_options = ["CNY", "HKD", "JPY", "MOP", "NTD", "USD", "Other"]
+        selected_curr = st.selectbox("Currency", currency_options, index=1)
 
-    if selected_lang == "Other":
-        user_lang = st.text_input("Please specify output language (e.g. 日本語)", value="日本語")
-    else:
-        user_lang = selected_lang
+        if selected_lang == "Other":
+            user_lang = st.text_input("Please specify output language (e.g. 日本語)", value="日本語")
+        else:
+            user_lang = selected_lang
 
-    if selected_curr == "Other":
-        # 讓用戶真的能打字輸入貨幣名稱
-        user_currency = st.text_input("Please specify currency (e.g. EUR)", value="EUR")
-    else:
-        user_currency = selected_curr
+        if selected_curr == "Other":
+            # 讓用戶真的能打字輸入貨幣名稱
+            user_currency = st.text_input("Please specify currency (e.g. EUR)", value="EUR")
+        else:
+            user_currency = selected_curr
 
 
-    st.divider()
-    st.header("🕕 Parameters")
-    city_from = st.text_input("Departure", value="Hong Kong", key="input_city_from")
-    city_to = st.text_input("Destination", key="input_city_to")
-    days = st.number_input("Days", min_value=1, value=2, key="input_days")
-    theme = st.pills(label="Theme", options=["🌇 Take Photos", "🍕 Enjoy Cuisines", "🎢 Theme Park", "🏛️ Museum", "🛍️ shopping"],
-                     selection_mode="multi")
-    budget = st.number_input(f"Budget ({user_currency})", step=2000, key="budget_input")
-    st.button("Predict budget for me", use_container_width=True, on_click=reset_budget_callback)
-    st.divider()
-    max_images = st.slider("🖼️Images count", 0, 2, 1)
-    image_aspect = st.selectbox("Ratio", ["1:1", "16:9", "4:3"], index=1)
-    side_submit = st.button("🚀 Start Planning", use_container_width=True, type="primary")
-    st.divider()
-    if st.button("🗑️ Clear History", use_container_width=True):
-        delete_user_history()
-        st.session_state.history = []
-        st.rerun()
+        st.divider()
+        st.header("🕕 Parameters")
+        city_from = st.text_input("Departure", value="Hong Kong", key="input_city_from")
+        city_to = st.text_input("Destination", key="input_city_to")
+        days = st.number_input("Days", min_value=1, value=2, key="input_days")
+        theme = st.pills(label="Theme", options=["🌇 Take Photos", "🍕 Enjoy Cuisines", "🎢 Theme Park", "🏛️ Museum", "🛍️ shopping"],
+                         selection_mode="multi")
+        budget = st.number_input(f"Budget ({user_currency})", step=2000, key="budget_input")
+        st.button("Predict budget for me", use_container_width=True, on_click=reset_budget_callback)
+        st.divider()
+        max_images = st.slider("🖼️Images count", 0, 2, 1)
+        image_aspect = st.selectbox("Ratio", ["1:1", "16:9", "4:3"], index=1)
+        side_submit = st.button("🚀 Start Planning", use_container_width=True, type="primary")
+        st.divider()
+        if st.button("🗑️ Clear History", use_container_width=True):
+            delete_user_history()
+            st.session_state.history = []
+            st.rerun()
+
+    with page2:
+        st.header("📜 Past Itineraries")
+        if st.session_state.history:
+            for item in st.session_state.history:
+                # 在側邊欄使用簡短標題避免擠壓
+                with st.expander(f"{item['time']} - {item['destination']}"):
+                    # 清理文字，移除圖片 Prompt 部分
+                    clean_hist = re.split(r"===IMAGE_PROMPTS===", item['itinerary'])[0].strip()
+                    st.markdown(clean_hist)
+
+                    # 顯示圖片
+                    if item['images']:
+                        # 側邊欄寬度有限，改用 1 欄或 2 欄顯示
+                        img_count = len(item['images'])
+                        cols = st.columns(min(img_count, 2))
+                        for i, img in enumerate(item['images']):
+                            # 使用 use_container_width 確保圖片不超出側邊欄
+                            cols[i % 2].image(img, use_container_width=True)
+
+                    st.caption(f"Model: {item['model'].split('/')[-1]}")
+        else:
+            st.info("No history yet. Start your first trip!")
+
+
 
 # ==========================================
 # 4. 主頁面與邏輯
@@ -318,16 +345,6 @@ with col2:
             #st.image
             #st.image()要包括AI自動，語言，其他貨幣，航班代碼；0預算，跨國旅行，圖像生成
 
-
-
-if st.session_state.history:
-    for item in st.session_state.history:  # 資料庫已按時間排序
-        with st.expander(f"{item['time']} - {item['destination']} | 🤖 {item['model'].split('/')[-1]}"):
-            clean_hist = re.split(r"===IMAGE_PROMPTS===", item['itinerary'])[0].strip()
-            st.markdown(clean_hist)
-            if item['images']:
-                cols = st.columns(len(item['images']))
-                for i, img in enumerate(item['images']): cols[i].image(img)
 
 user_input = st.chat_input("Enter travel details...")
 
