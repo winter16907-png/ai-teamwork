@@ -501,7 +501,7 @@ with cols[3]:
         set_prompt("Hawaii island-hopping suggestions, including water activities and volcanic parks.", "HNL")
         st.rerun()
 
-st.write(">You are suggested to input parameters before clicking the tags ")
+st.write(">**You are suggested to input parameters before clicking the tags**")
 
 # 將 chat_input 的值與 session_state 綁定
 # 注意：Streamlit 的 chat_input 目前不直接支援 value 參數，
