@@ -275,20 +275,61 @@ with col1:
 
     # 定義自定義 CSS
     glass_style = """
-    <style>
-        .glass-container {
-            background: rgba(255, 255, 255, 0.2); /* 背景半透明 */
-            backdrop-filter: blur(1000px);         /* 背景模糊 */
-            -webkit-backdrop-filter: blur(20px); /* 兼容 Safari */
-            border-radius: 15px;                 /* 圓角 */
-            border: 1px solid rgba(255, 255, 255, 0.3); /* 邊框線 */
-            padding: 20px;
-            color: #31333F;                      /* 字體顏色 */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* 陰影增添立體感 */
-        }
-    </style>
-    """
+        <style>
+            /* 1. 中間的磨砂玻璃容器 */
+            .glass-container {
+                background: rgba(255, 255, 255, 0.2); 
+                backdrop-filter: blur(20px);         
+                -webkit-backdrop-filter: blur(20px); 
+                border-radius: 15px;                 
+                border: 1px solid rgba(255, 255, 255, 0.3); 
+                padding: 25px;                       /* 稍微增加內間距讓視覺更舒服 */
+                color: #31333F;                      
+                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); 
+                margin-bottom: 20px;                 /* 增加與下方內容的間距 */
+            }
 
+            /* 2. 調整 Sidebar (側邊欄) 的顏色與透明度 */
+            [data-testid="stSidebar"] {
+                background-color: rgba(255, 252, 240, 0.9) !important; /* 淡淡的米黃色，配地圖很搭 */
+                border-right: 1px solid rgba(0,0,0,0.05);
+            }
+
+            /* 讓側邊欄上方的 Tabs 也變透明感 */
+            [data-testid="stSidebar"] .stTabs {
+                background-color: transparent !important;
+            }
+
+            /* 3. 調整問號按鈕 (Popover) 的外觀 */
+            /* 針對 popover 的按鈕本身 */
+            button[data-testid="stPopoverInternal"] {
+                background-color: rgba(255, 255, 255, 0.5) !important;
+                border: 1px solid rgba(255, 255, 255, 0.5) !important;
+                backdrop-filter: blur(10px);
+                border-radius: 50% !important; /* 讓它變圓形更像幫助按鈕 */
+                width: 40px;
+                height: 40px;
+            }
+
+            /* 調整 popover 彈出視窗的寬度和陰影 */
+            div[data-testid="stPopoverBody"] {
+                background-color: rgba(255, 255, 255, 0.95) !important;
+                border-radius: 15px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            }
+
+            /* 4. 修正標題與副標題的間距 */
+            .glass-container h1 {
+                margin-bottom: 0px !important; 
+                padding-bottom: 0px !important;
+            }
+            .glass-container blockquote {
+                margin-top: 5px !important;
+                border-left: 3px solid rgba(0,0,0,0.1) !important; /* 淡淡的左邊框 */
+                color: rgba(0,0,0,0.6) !important;
+            }
+        </style>
+        """
     # 注入 CSS
     st.markdown(glass_style, unsafe_allow_html=True)
 
