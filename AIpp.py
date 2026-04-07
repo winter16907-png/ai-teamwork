@@ -35,6 +35,48 @@ def init_db():
     conn.close()
 
 
+# --- 1. 定義一個將圖片轉成 Base64 的函數 (這能讓圖片直接嵌入網頁) ---
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+
+# --- 2. 核心：設定背景透明度的函數 ---
+def set_transparent_bg_via_base64(bin_str, opacity=0.2):
+    """
+    設定網頁背景圖片及其透明度。
+    bin_str: 圖片的 Base64 字串
+    opacity: 透明度，數值越小越透明 (0.0 完全透明, 1.0 完全不透明)
+    """
+    page_bg_html = f'''
+    <style>
+    /* 這是 Streamlit 的主容器 */
+    [data-testid="stAppViewContainer"] {{
+        /* 使用 linear-gradient 在圖片上蓋一層半透明白色，造成「變透明」的視覺效果 */
+        background-image: 
+            linear-gradient(
+                rgba(255, 255, 255, {1 - opacity}), 
+                rgba(255, 255, 255, {1 - opacity})
+            ),
+            url("data:image/jpeg;base64,{bin_str}");
+
+        /* 下面這些確保圖片鋪滿螢幕且不重複 */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed; /* 圖片不隨頁面捲動 */
+    }}
+
+    /* 為了讓上方標題區也跟著透明，我們需要把它的背景色拿掉 */
+    [data-testid="stHeader"] {{
+        background: rgba(0,0,0,0);
+    }}
+    </style>
+    '''
+    # 注入 HTML/CSS 代碼
+    st.markdown(page_bg_html, unsafe_allow_html=True)
+
 def save_new_record_to_db(record):
     """將新行程存入資料庫（初始無圖片）"""
     conn = sqlite3.connect(DB_NAME)
@@ -227,6 +269,15 @@ col1, col2 = st.columns([0.9, 0.1]) # 調整比例讓問號靠右
 
 with col1:
     st.title("✈️ AI Trip Planner Pro")
+    try:
+        img_base64 = get_base64_of_bin_file('background.jpg')
+
+        # 調用函數，並設定透明度為 0.15 (15% 的不透明度，看起來非常淡)
+        set_transparent_bg_via_base64(img_base64, opacity=0.15)
+
+    except FileNotFoundError:
+        # 如果找不到圖片，就在網頁顯示一個小警告 (選用)
+        st.warning("⚠️ 找不到 background.jpg，無法設定背景圖。請確認檔案是否存在。")
     st.write(">developed by kalokwong6's team")
     st.info("This is an AI, and the information provided may be inaccurate.")
     st.image("trip_1.png",caption=" ")
@@ -252,7 +303,7 @@ with col2:
             st.write("**black-forest-labs/flux.2-pro** (one of the advanced image models around the world)")
             st.markdown("### 1.2 Multiple input method")
             st.write("No matter you use the sidebar or chatbox, AI can generate complete information")
-            st.info("It is suggested to use the sidebar to enter information and use the chatbox to enter your needs instead of using single method.")
+            st.info("It is suggested to use the sidebar to enter information and use the chatbox to enter your needs instead of using single method to enter travel details.")
             st.markdown("### 1.3 Complete planning")
             st.write(">Our models will arrange your flight, hotel, meals, budget and even insurance")
             st.write("**If your destination is dangerous, AI warns you about the risks**")
