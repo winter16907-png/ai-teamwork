@@ -466,6 +466,7 @@ with col2:
             st.image("AImage1.png", caption="Demo of Language, Currency and Destination Setting")
             st.image("AImage2.png", caption="A prompt demo")
             st.image("AImage3.png", caption="An output demo")
+            st.write(">Of course, you are welcome to enjoy our latest hashtag function to plan an ideal trip")
 
 # ==========================================
 # 4.1 快捷按鈕邏輯 (Hot Spots)
@@ -484,19 +485,19 @@ if "temp_input" not in st.session_state:
 
 cols = st.columns(4)
 with cols[0]:
-    if st.button("🇯🇵 Tokyo & Osaka", use_container_width=True):
-        set_prompt("I want to go to Tokyo and Osaka, please arrange a 3-day itinerary that includes a Shinkansen transfer.", "Tokyo")
+    if st.button("🇯🇵 One-week Tokyo & Osaka trip", use_container_width=True):
+        set_prompt("I want to go to Tokyo and Osaka, please arrange an one-week itinerary that includes a Shinkansen transfer.", "Tokyo")
         st.rerun()
 with cols[1]:
-    if st.button("🇪🇺 Europe Tour", use_container_width=True):
+    if st.button("🇪🇺 One-month Europe Tour", use_container_width=True):
         set_prompt("I want to visit England, France, Italy, Germany, and Finland for a month, with a relatively generous budget. Please plan a detailed itinerary.", "London")
         st.rerun()
 with cols[2]:
-    if st.button("🇱🇻 Baltic States", use_container_width=True):
+    if st.button("🇱🇻 One-month Baltic States", use_container_width=True):
         set_prompt("I want to visit the three Baltic states and experience the culture of Northern Europe.", "Riga")
         st.rerun()
 with cols[3]:
-    if st.button("🏝️ Hawaii Island", use_container_width=True):
+    if st.button("🏝️ Hawaii Island Tour", use_container_width=True):
         set_prompt("Hawaii island-hopping suggestions, including water activities and volcanic parks.", "Hawaii")
         st.rerun()
 
