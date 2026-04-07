@@ -220,10 +220,11 @@ with col2:
             st.write("**black-forest-labs/flux.2-pro** (one of the advanced image models around the world)")
             st.markdown("### 1.2 Multiple input method")
             st.write("No matter you use the sidebar or chatbox, AI can generate complete information")
-            st.info("It is suggested to use the sidebar to enter information and use the chatbox to enter your needs.")
+            st.info("It is suggested to use the sidebar to enter information and use the chatbox to enter your needs instead of using single method.")
             st.markdown("### 1.3 Complete planning")
             st.write(">Our models will arrange your flight, hotel, meals, budget and even insurance")
             st.write("**If your destination is dangerous, AI warns you about the risks**")
+
 
         with tab2:
             st.markdown("## 2.Slidebar Functions")
