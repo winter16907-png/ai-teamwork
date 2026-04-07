@@ -198,7 +198,28 @@ def generate_flux_image(prompt: str, aspect_ratio: str = "16:9"):
 with st.sidebar:
     page1, page2 = st.tabs(["💻 Settings", "⏰ History"])
     with page1:
-        st.header("⚙️ Settings")
+        # 定義自定義 CSS
+        glass_title = """
+        <style>
+            .glass-container {
+                background: rgba(255, 255, 255, 0.2); /* 背景半透明 */
+                backdrop-filter: blur(1000px);         /* 背景模糊 */
+                -webkit-backdrop-filter: blur(1000px); /* 兼容 Safari */
+                border-radius: 15px;                 /* 圓角 */
+                border: 1px solid rgba(255, 255, 255, 0.3); /* 邊框線 */
+                padding: 20px;
+                color: #31333F;                      /* 字體顏色 */
+                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* 陰影增添立體感 */
+            }
+        </style>
+        """
+
+        st.markdown(glass_title, unsafe_allow_html=True)
+
+        st.markdown("""
+            <div class="glass-container">
+                <h3>⚙️ Settings</h3>
+                """)
         model_map = {"Auto-Fuse": [PRIMARY_BRAIN, FUSE_1, FUSE_2], "GPT-4o (Fastest)": [PRIMARY_BRAIN], "DeepSeek V3 (More accurate)": [FUSE_1]}
         selected_mode = st.selectbox("AI choice", list(model_map.keys()), key="model_selection_v1")
         lang_options = ["繁體中文", "简体中文", "English", "Other"]
