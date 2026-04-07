@@ -306,10 +306,10 @@ with col1:
         # 如果找不到圖片，就在網頁顯示一個小警告 (選用)
         st.warning("⚠️ Unable to find background.png, unable to set background image. Please check if the file exists.")
     st.info("This is an AI, and the information provided may be inaccurate.")
-    st.image("trip_1.png",caption=" ")
-    st.image("trip_1-2.png",caption=" ")
-    st.image("trip_1-3.png",caption=" ")
-    st.image("trip_1-4.png",caption=" ")
+    #st.image("trip_1.png",caption=" ")
+    #st.image("trip_1-2.png",caption=" ")
+    #st.image("trip_1-3.png",caption=" ")
+    #st.image("trip_1-4.png",caption=" ")
 
 
 with col2:
