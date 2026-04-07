@@ -202,10 +202,10 @@ with col1:
     st.title("✈️ AI Trip Planner Pro")
     st.write(">developed by kalokwong6's team")
     st.info("This is an AI, and the information provided may be inaccurate.")
-    st.image("trip_1.png",caption="")
-    st.image("trip_1-2.png",caption="")
-    st.image("trip_1-3.png",caption="")
-    st.image("trip_1-4.png",caption="")
+    st.image("trip_1.png",caption=" ")
+    st.image("trip_1-2.png",caption=" ")
+    st.image("trip_1-3.png",caption=" ")
+    st.image("trip_1-4.png",caption=" ")
 
 with col2:
     with st.popover("❓"):
