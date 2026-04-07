@@ -270,14 +270,14 @@ col1, col2 = st.columns([0.9, 0.1]) # 調整比例讓問號靠右
 with col1:
     st.title("✈️ AI Trip Planner Pro")
     try:
-        img_base64 = get_base64_of_bin_file('background.jpg')
+        img_base64 = get_base64_of_bin_file('background.png')
 
         # 調用函數，並設定透明度為 0.15 (15% 的不透明度，看起來非常淡)
         set_transparent_bg_via_base64(img_base64, opacity=0.15)
 
     except FileNotFoundError:
         # 如果找不到圖片，就在網頁顯示一個小警告 (選用)
-        st.warning("⚠️ 找不到 background.jpg，無法設定背景圖。請確認檔案是否存在。")
+        st.warning("⚠️ Unable to find background.png, unable to set background image. Please check if the file exists.")
     st.write(">developed by kalokwong6's team")
     st.info("This is an AI, and the information provided may be inaccurate.")
     st.image("trip_1.png",caption=" ")
