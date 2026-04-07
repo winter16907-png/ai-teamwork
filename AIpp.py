@@ -224,7 +224,7 @@ with st.sidebar:
         city_from = st.text_input("Departure", value="Hong Kong", key="input_city_from")
         city_to = st.text_input("Destination", key="input_city_to")
         days = st.number_input("Days", min_value=1, value=2, key="input_days")
-        theme = st.pills(label="Theme", options=["🌇 Take Photos", "🍕 Enjoy Cuisines", "🎢 Theme Park", "🏛️ Museum", "🛍️ shopping"],
+        theme = st.pills(label="Theme", options=["🌇 Take Photos", "🍕 Enjoy Cuisines", "🎢 Theme Park", "🏛️ Museum", "🛍️ shopping", "🏖️ vacation"],
                          selection_mode="multi")
         budget = st.number_input(f"Budget ({user_currency})", step=2000, key="budget_input")
         st.button("Predict budget for me", use_container_width=True, on_click=reset_budget_callback)
@@ -464,6 +464,13 @@ with col2:
             st.image("AImage2.png", caption="A prompt demo")
             st.image("AImage3.png", caption="An output demo")
 
+# 在 chat_input 之前加入這段
+st.write("💡 **Hot spots**")
+cols = st.columns(4) # 建立四個小欄位放標籤
+with cols[0]: st.caption("# Three-day trip to Tokyo and Osaka (Destination = Tokyo)")
+with cols[1]: st.caption("# A one-month trip to England, France, Italy, Germany and Finland (Destination = London)")
+with cols[2]: st.caption("# A one-month trip to the three Baltic states (Destination = Riga)")
+with cols[3]: st.caption("# #Hawaii Island Hopping Guide (Destination = Hawaii)")
 
 user_input = st.chat_input("Enter travel details...")
 
@@ -496,6 +503,7 @@ if side_submit or user_input:
     預算是0的意思是需要你提供一個舒適合理但不奢華的預算供用戶參考，用戶真正的預算並不是0
     標題及副標題應該是黑色粗體字體。副標題比普通文字大，標題比副標題大
     必須使用{user_currency}進行所有金額的計算
+    如有必要，請提醒用戶有關時差和夏令時/冬令時的消息
     56天或以上的行程無需過於詳細，避免token用盡而被截斷"""
 
     status = st.status("Planning...", expanded=True)
