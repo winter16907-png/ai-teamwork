@@ -138,6 +138,9 @@ if "user_uuid" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = load_history_from_db(st.session_state.user_uuid)
 
+if "dest_state" not in st.session_state:
+    st.session_state.dest_state = "" # 預設目的地為空
+
 
 def reset_budget_callback():
     st.session_state.budget_input = 0
@@ -222,7 +225,7 @@ with st.sidebar:
         st.divider()
         st.header("🕕 Parameters")
         city_from = st.text_input("Departure", value="Hong Kong", key="input_city_from")
-        city_to = st.text_input("Destination", key="input_city_to")
+        city_to = st.text_input("Destination", value=st.session_state.dest_state)
         days = st.number_input("Days", min_value=1, value=2, key="input_days")
         theme = st.pills(label="Theme", options=["🌇 Take Photos", "🍕 Enjoy Cuisines", "🎢 Theme Park", "🏛️ Museum", "🛍️ shopping", "🏖️ vacation"],
                          selection_mode="multi")
@@ -472,8 +475,9 @@ st.write("💡 **Hot spots**")
 # 定義按鈕觸發的函式
 def set_prompt(prompt_text, dest_city):
     st.session_state.temp_input = prompt_text
-    st.session_state.input_city_to = dest_city # 同步更新側邊欄的目的地
-
+    st.session_state.dest_state = dest_city  # 修改這裡，對應剛才建立的變數
+    st.rerun()
+    
 # 初始化輸入緩存
 if "temp_input" not in st.session_state:
     st.session_state.temp_input = ""
