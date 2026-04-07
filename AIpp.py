@@ -477,7 +477,7 @@ def set_prompt(prompt_text, dest_city):
     st.session_state.temp_input = prompt_text
     st.session_state.dest_state = dest_city  # 修改這裡，對應剛才建立的變數
     st.rerun()
-    
+
 # 初始化輸入緩存
 if "temp_input" not in st.session_state:
     st.session_state.temp_input = ""
@@ -504,7 +504,7 @@ with cols[3]:
 # 注意：Streamlit 的 chat_input 目前不直接支援 value 參數，
 # 我們透過預設一個 placeholder 或是在上方顯示「已選擇」來優化體驗
 if st.session_state.temp_input:
-    st.info(f"已選取需求：{st.session_state.temp_input} (請點擊下方輸入框並按 Enter 送出)")
+    st.info(f"Selected requirements:{st.session_state.temp_input}")
 
 # 核心修正：讓 chat_input 抓取剛剛設定好的文字
 user_input = st.chat_input("Enter travel details...", key="main_chat_input")
