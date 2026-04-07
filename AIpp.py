@@ -219,7 +219,8 @@ with st.sidebar:
         st.markdown("""
             <div class="glass-container">
                 <h3>⚙️ Settings</h3>
-                """)
+                </div>
+                """, unsafe_allow_html=True)
         model_map = {"Auto-Fuse": [PRIMARY_BRAIN, FUSE_1, FUSE_2], "GPT-4o (Fastest)": [PRIMARY_BRAIN], "DeepSeek V3 (More accurate)": [FUSE_1]}
         selected_mode = st.selectbox("AI choice", list(model_map.keys()), key="model_selection_v1")
         lang_options = ["繁體中文", "简体中文", "English", "Other"]
