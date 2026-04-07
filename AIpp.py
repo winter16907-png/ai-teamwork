@@ -201,10 +201,10 @@ with st.sidebar:
         # 定義自定義 CSS
         glass_title = """
         <style>
-            .glass-container {
+            .glass-title {
                 background: rgba(255, 255, 255, 0.2); /* 背景半透明 */
                 backdrop-filter: blur(20px);         /* 背景模糊 */
-                -webkit-backdrop-filter: blur(1000px); /* 兼容 Safari */
+                -webkit-backdrop-filter: blur(20px); /* 兼容 Safari */
                 border-radius: 15px;                 /* 圓角 */
                 border: 1px solid rgba(255, 255, 255, 0.3); /* 邊框線 */
                 padding: 20px;
@@ -217,7 +217,7 @@ with st.sidebar:
         st.markdown(glass_title, unsafe_allow_html=True)
 
         st.markdown("""
-            <div class="glass-container">
+            <div class="glass-title">
                 <h3>⚙️ Settings</h3>
                 </div>
                 """, unsafe_allow_html=True)
