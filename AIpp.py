@@ -464,13 +464,54 @@ with col2:
             st.image("AImage2.png", caption="A prompt demo")
             st.image("AImage3.png", caption="An output demo")
 
-# 在 chat_input 之前加入這段
+# ==========================================
+# 4.1 快捷按鈕邏輯 (Hot Spots)
+# ==========================================
 st.write("💡 **Hot spots**")
-cols = st.columns(4) # 建立四個小欄位放標籤
-with cols[0]: st.caption("# Three-day trip to Tokyo and Osaka (Destination = Tokyo)")
-with cols[1]: st.caption("# A one-month trip to England, France, Italy, Germany and Finland (Destination = London)")
-with cols[2]: st.caption("# A one-month trip to the three Baltic states (Destination = Riga)")
-with cols[3]: st.caption("# #Hawaii Island Hopping Guide (Destination = Hawaii)")
+
+# 定義按鈕觸發的函式
+def set_prompt(prompt_text, dest_city):
+    st.session_state.temp_input = prompt_text
+    st.session_state.input_city_to = dest_city # 同步更新側邊欄的目的地
+
+# 初始化輸入緩存
+if "temp_input" not in st.session_state:
+    st.session_state.temp_input = ""
+
+cols = st.columns(4)
+with cols[0]:
+    if st.button("🇯🇵 Tokyo & Osaka", use_container_width=True):
+        set_prompt("我想去東京和大阪，請安排包含新幹線轉乘的 3 天行程。", "Tokyo")
+        st.rerun()
+with cols[1]:
+    if st.button("🇪🇺 Europe Tour", use_container_width=True):
+        set_prompt("我想去英法意德芬五國，預算比較寬裕，請規劃一個月的深度遊。", "London")
+        st.rerun()
+with cols[2]:
+    if st.button("🇱🇻 Baltic States", use_container_width=True):
+        set_prompt("我想去波羅的海三小國，重點放在里加的建築和歷史。", "Riga")
+        st.rerun()
+with cols[3]:
+    if st.button("🏝️ Hawaii Island", use_container_width=True):
+        set_prompt("夏威夷跳島建議，希望包含水上活動和火山公園。", "Hawaii")
+        st.rerun()
+
+# 將 chat_input 的值與 session_state 綁定
+# 注意：Streamlit 的 chat_input 目前不直接支援 value 參數，
+# 我們透過預設一個 placeholder 或是在上方顯示「已選擇」來優化體驗
+if st.session_state.temp_input:
+    st.info(f"已選取需求：{st.session_state.temp_input} (請點擊下方輸入框並按 Enter 送出)")
+
+# 核心修正：讓 chat_input 抓取剛剛設定好的文字
+user_input = st.chat_input("Enter travel details...", key="main_chat_input")
+
+# 如果點擊了按鈕，我們強制覆蓋 user_input 的邏輯
+if st.session_state.temp_input and not user_input:
+    # 這裡可以選擇讓程式自動執行一次，或者讓用戶確認後送出
+    # 為了防呆，我們將值賦予給 user_input 變數
+    user_input = st.session_state.temp_input
+    # 清空緩存避免無限循環
+    st.session_state.temp_input = ""
 
 user_input = st.chat_input("Enter travel details...")
 
