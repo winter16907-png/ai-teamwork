@@ -504,19 +504,19 @@ with hot_spot_container:
 
     cols = st.columns(4)
     with cols[0]:
-        if st.button("🇯🇵 #One-week Tokyo & Osaka trip", use_container_width=True):
+        if st.button("🇯🇵 One-week Tokyo & Osaka trip", use_container_width=True):
             set_prompt("I want to go to Tokyo and Osaka, please arrange an one-week itinerary that includes a Shinkansen transfer.", "HND")
             st.rerun()
     with cols[1]:
-        if st.button("🇪🇺 #Travel around Europe for a month", use_container_width=True):
+        if st.button("🇪🇺 Travel around Europe for a month", use_container_width=True):
             set_prompt("I want to visit England, France, Italy, Germany, and Finland for a month, with a relatively generous budget. Please plan a detailed itinerary.", "LHR")
             st.rerun()
     with cols[2]:
-        if st.button("🇱🇻 #One-month Baltic States", use_container_width=True):
+        if st.button("🇱🇻 One-month Baltic States", use_container_width=True):
             set_prompt("I want to visit the three Baltic states and experience the culture of Northern Europe.", "RIX")
             st.rerun()
     with cols[3]:
-        if st.button("🏝️ #Hawaii Island Tour", use_container_width=True):
+        if st.button("🏝️ Hawaii Island Tour", use_container_width=True):
             set_prompt("Hawaii island-hopping suggestions, including water activities and volcanic parks.", "HNL")
             st.rerun()
 
