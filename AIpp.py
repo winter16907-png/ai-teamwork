@@ -468,6 +468,9 @@ with col2:
             st.image("AImage3.png", caption="An output demo")
             st.write(">Of course, you are welcome to enjoy our latest hashtag function to plan an ideal trip")
 
+ai_output_area = st.container()
+st.divider()
+
 # ==========================================
 # 4.1 快捷按鈕邏輯 (Hot Spots)
 # ==========================================
