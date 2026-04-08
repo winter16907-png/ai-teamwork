@@ -149,6 +149,17 @@ if "history" not in st.session_state: st.session_state.history = load_history_fr
 if "dest_state" not in st.session_state: st.session_state.dest_state = ""
 if "temp_input" not in st.session_state: st.session_state.temp_input = ""
 if "budget_input" not in st.session_state: st.session_state.budget_input = 20000
+if "current_output" not in st.session_state: st.session_state.current_output = None
+
+# 固定背景邏輯：避免隨機數導致圖片消失
+try:
+    # 這裡建議固定一張，或是在 session 內固定隨機數
+    if "bg_base64" not in st.session_state:
+        bg_file = 'background.png' # 預設檔案
+        st.session_state.bg_base64 = get_base64_of_bin_file(bg_file)
+    set_transparent_bg_via_base64(st.session_state.bg_base64, opacity=0.4)
+except:
+    pass
 
 # ==========================================
 # 4. 側邊欄 UI
@@ -219,7 +230,14 @@ except:
 
 # --- 核心容器：確保 AI 輸出在按鈕上方 ---
 ai_output_area = st.container()
-
+with ai_output_area:
+    if st.session_state.current_output:
+        res = st.session_state.current_output
+        st.markdown(res['text'])
+        if res['images']:
+            cols = st.columns(len(res['images']))
+            for idx, img in enumerate(res['images']):
+                cols[idx].image(img, use_container_width=True)
 st.divider()
 
 # --- 快捷按鈕 (Hot Spots) ---
@@ -249,10 +267,18 @@ user_input = st.chat_input("Enter travel details...")
 # 6. 執行邏輯
 # ==========================================
 if side_submit or user_input or st.session_state.temp_input:
-    # 邏輯預處理
     final_detail = user_input if user_input else st.session_state.temp_input
-    st.session_state.temp_input = ""  # 立刻清空防止重複
+    st.session_state.temp_input = ""
     target_city = city_to if city_to else st.session_state.dest_state
+
+    if not target_city:
+        st.error("Please enter a Destination!");
+        st.stop()
+
+    with ai_output_area:
+        status = st.status("Planning your dream trip...", expanded=True)
+
+        # ... (SYSTEM_PROMPT 與 query 保持不變) ...
 
     if not target_city:
         st.error("Please enter a Destination!");
@@ -297,37 +323,38 @@ if side_submit or user_input or st.session_state.temp_input:
             raw_itinerary, model_used = call_ai_with_fuse(query, model_map[selected_mode], SYSTEM_PROMPT)
             display_text = re.split(r"===IMAGE_PROMPTS===", raw_itinerary)[0].strip()
 
-            # 存入資料庫與 History
+            # 準備存入狀態
+            st.session_state.current_output = {"text": display_text, "images": []}
+
+            # 存入資料庫
             rec = {"time": datetime.now().strftime("%m/%d %H:%M"), "destination": target_city,
                    "itinerary": raw_itinerary, "images": [], "model": model_used, "days": days,
                    "user_id": st.session_state.user_uuid}
             save_new_record_to_db(rec)
-            st.session_state.history.insert(0, rec)
 
-            status.update(label=f"✅ Planned by {model_used}.", state="complete")
-            st.markdown(display_text)
+            status.write(display_text)  # 在 status 內也顯示進度
 
             # 圖片生成邏輯
             img_match = re.search(r"===IMAGE_PROMPTS===(.*)===IMAGE_PROMPTS_END===", raw_itinerary, re.DOTALL)
+            generated_imgs = []
             if img_match and max_images > 0:
                 p_list = [l.strip() for l in img_match.group(1).split("\n") if re.match(r"^\d", l.strip())][:max_images]
-                if p_list:
-                    st.subheader("🖼️ Visual Journey")
-                    i_cols = st.columns(len(p_list))
-                    imgs = []
-                    for i, p in enumerate(p_list):
-                        with st.spinner(f"Generating image {i + 1}..."):
-                            img_b = generate_flux_image(p, image_aspect)
-                            if img_b:
-                                imgs.append(img_b)
-                                update_db_images(raw_itinerary, imgs)
-                                st.session_state.history[0]["images"] = imgs
-                                i_cols[i].image(img_b, use_container_width=True)
+                for p in p_list:
+                    img_b = generate_flux_image(p, image_aspect)
+                    if img_b:
+                        generated_imgs.append(img_b)
 
-            st.success("Trip saved!")
+                # 更新圖片到狀態與資料庫
+                st.session_state.current_output["images"] = generated_imgs
+                update_db_images(raw_itinerary, generated_imgs)
+
+            status.update(label=f"✅ Planned by {model_used}.", state="complete")
+
+            # 重要：更新歷史紀錄列表
+            st.session_state.history = load_history_from_db(st.session_state.user_uuid)
+
+            # 手動觸發一次重新渲染以更新側邊欄，此時因為 current_output 已有值，結果不會不見
             st.rerun()
 
         except Exception as e:
-            st.error("❌ Planning failed.")
-            with st.expander("Error Details"):
-                st.code(str(e))
+            st.error(f"❌ Planning failed: {str(e)}")
