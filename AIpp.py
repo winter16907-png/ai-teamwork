@@ -78,12 +78,13 @@ def set_transparent_bg_via_base64(bin_str, opacity=0.2):
     st.markdown(page_bg_html, unsafe_allow_html=True)
 
 def save_new_record_to_db(record):
-    """將新行程存入資料庫（初始無圖片）"""
+    """【修正：補上 user_id 參數】"""
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("INSERT INTO history (time, destination, itinerary, images_json, model, days) VALUES (?,?,?,?,?,?)",
+    # 這裡原先少了 user_id 的對應
+    c.execute("INSERT INTO history (time, destination, itinerary, images_json, model, days, user_id) VALUES (?,?,?,?,?,?,?)",
               (record['time'], record['destination'], record['itinerary'],
-               json.dumps([]), record['model'], record['days']))
+               json.dumps([]), record['model'], record['days'], record['user_id']))
     conn.commit()
     conn.close()
 
@@ -523,97 +524,115 @@ if st.session_state.temp_input and not user_input:
     # 清空緩存避免無限循環
     st.session_state.temp_input = ""
 
+# ==========================================
+# 4.2 執行規劃邏輯
+# ==========================================
 
 if side_submit or user_input:
-    # 如果是從側邊欄觸發且沒有聊天輸入，給一個預設提示或檢查必填項
-    final_query_detail = user_input if user_input else "請根據以上設定規劃最佳行程。"
+    # 修正點 1: 確定最終需求文字，並立刻清空 temp_input 避免重複觸發
+    final_query_detail = user_input if user_input else st.session_state.temp_input
+    st.session_state.temp_input = ""
 
-    if not city_to:
+    # 修正點 2: 確保目的地抓取正確
+    target_city = st.session_state.dest_state if st.session_state.dest_state else city_to
+
+    if not target_city:
         st.error("Please enter a Destination in the sidebar!")
         st.stop()
 
-    SYSTEM_PROMPT = f"""請嚴格遵守以下守則：
-    1.框架方面：
-    出發地到目的地的簽證/護照等要求
-    如果預算不是0，寫出匯率（以{user_currency}兌換目的地的貨幣。例如30,000 HKD ≈ 585,000 JPY），否則寫出以寫出1{user_currency}比幾當地貨幣，必須標註「The exchange rate may vary, and the actual exchange rate will be based on the bank's rate.」
-    簡單寫出用戶的預算是寬鬆/合理/緊湊，附上1-3句解釋
-    酒店（建議推薦住宿費用包含早餐的酒店，附上價格，位置是否方便，評價等）
-    機票（優先選擇不需轉機的航班，附上起飛日期，來回機票價格，航空公司等，如要轉機，列出所有中轉站），必須標註「The flight number is for reference only; please refer to the actual booking.」
-    行程（第幾天的什麼時間去哪裡大約花多少錢做什麼，包括午晚餐）
-    旅遊保險（哪一家公司以什麼價格提供什麼服務）
-    預算分配，必須標註「The price is based on AI simulation results; please refer to actual consumption for accurate figures.」
-    注意事項（如充電插頭差異）
-    圖片生成（如有）
-    2.安全方面：
-    如果目的地有戰亂，災害，衛生和政治之類的安全問題，請警告用戶不要前往
-    3.其他方面：
-    天數必須嚴格等於用戶設定的數字，出發日為第一天，回程日為最後一天。
-    如果用戶語言為Auto，根據用戶的輸入語言判斷輸出語言
-    如果用戶的預算過於緊湊，幾乎不可能，可以適度增加預算；但是如果用戶的時間過於緊湊，優先考慮縮減行程而不是增加旅行日期
-    預算是0的意思是需要你提供一個舒適合理但不奢華的預算供用戶參考，用戶真正的預算並不是0
-    標題及副標題應該是黑色粗體字體。副標題比普通文字大，標題比副標題大
-    必須使用{user_currency}進行所有金額的計算
-    如有必要，請提醒用戶有關時差和夏令時/冬令時的消息
-    56天或以上的行程無需過於詳細，避免token用盡而被截斷"""
+    # 修正點 3: 將所有輸出邏輯全部包進 ai_output_area 容器
+    with ai_output_area:
+        status = st.status("Planning...", expanded=True)
 
-    status = st.status("Planning...", expanded=True)
-    prompt_instruction = ""
-    if max_images > 0:
-        placeholders = "\n".join([f"{i + 1}. [描述]" for i in range(max_images)])
-        prompt_instruction = f"\n\n請在結束後緊接著輸出此格式：\n===IMAGE_PROMPTS===\n{placeholders}\n===IMAGE_PROMPTS_END==="
+        SYSTEM_PROMPT = f"""請嚴格遵守以下守則：
+        1.框架方面：
+        出發地到目的地的簽證/護照等要求
+        如果預算不是0，寫出匯率（以{user_currency}兌換目的地的貨幣。例如30,000 HKD ≈ 585,000 JPY），否則寫出以寫出1{user_currency}比幾當地貨幣，必須標註「The exchange rate may vary, and the actual exchange rate will be based on the bank's rate.」
+        簡單寫出用戶的預算是寬鬆/合理/緊湊，附上1-3句解釋
+        酒店（建議推薦住宿費用包含早餐的酒店，附上價格，位置是否方便，評價等）
+        機票（優先選擇不需轉機的航班，附上起飛日期，來回機票價格，航空公司等，如要轉機，列出所有中轉站），必須標註「The flight number is for reference only; please refer to the actual booking.」
+        行程（第幾天的什麼時間去哪裡大約花多少錢做什麼，包括午晚餐）
+        旅遊保險（哪一家公司以什麼價格提供什麼服務）
+        預算分配，必須標註「The price is based on AI simulation results; please refer to actual consumption for accurate figures.」
+        注意事項（如充電插頭差異）
+        圖片生成（如有）
+        2.安全方面：
+        如果目的地有戰亂，災害，衛生和政治之類的安全問題，請警告用戶不要前往
+        3.其他方面：
+        天數必須嚴格等於用戶設定的數字，出發日為第一天，回程日為最後一天。
+        如果用戶語言為Auto，根據用戶的輸入語言判斷輸出語言
+        如果用戶的預算過於緊湊，幾乎不可能，可以適度增加預算；但是如果用戶的時間過於緊湊，優先考慮縮減行程而不是增加旅行日期
+        預算是0的意思是需要你提供一個舒適合理但不奢華的預算供用戶參考，用戶真正的預算並不是0
+        標題及副標題應該是黑色粗體字體。副標題比普通文字大，標題比副標題大
+        必須使用{user_currency}進行所有金額的計算
+        如有必要，請提醒用戶有關時差和夏令時/冬令時的消息
+        56天或以上的行程無需過於詳細，避免token用盡而被截斷"""
 
-    query = f"請用{user_lang}規劃從 {city_from} 到 {city_to} 的 {days} 天行程。主題是{','.join(theme)}預算 {budget}{user_currency}。優先滿足這些需求：{user_input}{prompt_instruction}"
+        prompt_instruction = ""
+        if max_images > 0:
+            placeholders = "\n".join([f"{i + 1}. [描述]" for i in range(max_images)])
+            prompt_instruction = f"\n\n請在結束後緊接著輸出此格式：\n===IMAGE_PROMPTS===\n{placeholders}\n===IMAGE_PROMPTS_END==="
 
-    try:
-        raw_itinerary, model_used = call_ai_with_fuse(query, model_map[selected_mode], SYSTEM_PROMPT)
+        # 使用修正後的 target_city 和 final_query_detail
+        query = f"請用{user_lang}規劃從 {city_from} 到 {target_city} 的 {days} 天行程。主題是{','.join(theme)}預算 {budget}{user_currency}。優先滿足這些需求：{final_query_detail}{prompt_instruction}"
 
-        # 建立紀錄
-        new_record = {
-            "time": datetime.now().strftime("%m/%d %H:%M"),
-            "destination": city_to,
-            "itinerary": raw_itinerary,
-            "images": [],
-            "model": model_used,
-            "days": days
-        }
+        try:
+            # 執行 AI 調用
+            raw_itinerary, model_used = call_ai_with_fuse(query, model_map[selected_mode], SYSTEM_PROMPT)
 
-        # 1. 存入資料庫
-        save_new_record_to_db(new_record)
-        # 2. 存入用戶端緩存
-        st.session_state.history.insert(0, new_record)
+            # 處理顯示文字
+            display_itinerary = re.split(r"===IMAGE_PROMPTS===", raw_itinerary)[0].strip()
+            status.update(label=f"✅ Planned by {model_used}.", state="complete")
+            st.markdown(display_itinerary)
 
-        display_itinerary = re.split(r"===IMAGE_PROMPTS===", raw_itinerary)[0].strip()
-        status.update(label=f"✅ Planned by {model_used}.", state="complete")
-        st.markdown(display_itinerary)
+            # 建立紀錄並存入資料庫 (補上遺漏的 user_id)
+            new_record = {
+                "time": datetime.now().strftime("%m/%d %H:%M"),
+                "destination": target_city,
+                "itinerary": raw_itinerary,
+                "images": [],
+                "model": model_used,
+                "days": days,
+                "user_id": st.session_state.user_uuid
+            }
 
-        img_match = re.search(r"===IMAGE_PROMPTS===(.*)", raw_itinerary, re.DOTALL)
-        if img_match and max_images > 0:
-            prompt_block = img_match.group(1).replace("===IMAGE_PROMPTS_END===", "").strip()
-            prompt_list = [l.strip() for l in prompt_block.split("\n") if
-                           l.strip() and re.match(r"^\d+[\.\.．\s：:]", l.strip())][:max_images]
+            # 保存到 DB (注意：你的 save_new_record_to_db 可能需要修改以支援 user_id，或者這裡先這樣)
+            save_new_record_to_db(new_record)
+            st.session_state.history.insert(0, new_record)
 
-            if prompt_list:
-                st.subheader("🖼️ Visual Journey")
-                img_cols = st.columns(len(prompt_list))
-                current_imgs = []
-                for i, p in enumerate(prompt_list):
-                    with st.spinner(f"Generating image {i + 1}..."):
-                        img_bytes = generate_flux_image(p, image_aspect)
-                        if img_bytes:
-                            current_imgs.append(img_bytes)
-                            # 更新 Session State
-                            st.session_state.history[0]["images"] = current_imgs
-                            # 同步更新資料庫中的圖片
-                            update_db_images(raw_itinerary, current_imgs)
+            # 圖片生成邏輯
+            img_match = re.search(r"===IMAGE_PROMPTS===(.*)", raw_itinerary, re.DOTALL)
+            if img_match and max_images > 0:
+                prompt_block = img_match.group(1).replace("===IMAGE_PROMPTS_END===", "").strip()
+                prompt_list = [l.strip() for l in prompt_block.split("\n") if
+                               l.strip() and re.match(r"^\d+[\.\.．\s：:]", l.strip())][:max_images]
 
-                            with img_cols[i]:
-                                st.image(img_bytes, use_container_width=True)
-                                st.download_button("💾 Download", io.BytesIO(img_bytes), f"trip_{i + 1}.png",
-                                                   "image/png", key=f"dl_{hash(p)}")
-            else:
-                st.warning("AI outputs tags but the content format is incorrect.")
-        elif max_images > 0:
-            st.error("AI does not output any image description tags.")
-        st.success("Trip saved permanently!")
-    except Exception as e:
-        st.error(f"Error: {e}")
+                if prompt_list:
+                    st.subheader("🖼️ Visual Journey")
+                    img_cols = st.columns(len(prompt_list))
+                    current_imgs = []
+                    for i, p in enumerate(prompt_list):
+                        with st.spinner(f"Generating image {i + 1}..."):
+                            img_bytes = generate_flux_image(p, image_aspect)
+                            if img_bytes:
+                                current_imgs.append(img_bytes)
+                                # 更新第一筆紀錄的圖片
+                                st.session_state.history[0]["images"] = current_imgs
+                                update_db_images(raw_itinerary, current_imgs)
+
+                                with img_cols[i]:
+                                    st.image(img_bytes, use_container_width=True)
+                                    st.download_button("💾 Download", io.BytesIO(img_bytes), f"trip_{i + 1}.png",
+                                                       "image/png", key=f"dl_{hash(p)}")
+                else:
+                    st.warning("AI outputs tags but the content format is incorrect.")
+
+            st.success("Trip saved permanently!")
+            # 全部完成後重整，讓側邊欄更新
+            st.rerun()
+
+        except Exception as e:
+            print(f"CRITICAL_ERROR: {str(e)}")
+            st.error("❌ I encountered a technical issue during the planning process. Please try again later.")
+            with st.expander("Show error details (for support)"):
+                st.code(str(e))
