@@ -279,6 +279,13 @@ with st.sidebar:
 # ==========================================
 # 4. 主頁面與邏輯
 # ==========================================
+main_area = st.container()   # 用來放標題和 AI 生成的結果
+bottom_area = st.container() # 專門用來放 Hot Spots
+
+with main_area:
+    # 這裡放你原本的 glass-container 標題
+    st.markdown("""<div class="glass-container">...</div>""", unsafe_allow_html=True)
+
 col1, col2 = st.columns([0.9, 0.1]) # 調整比例讓問號靠右
 
 with col1:
@@ -493,9 +500,13 @@ with col2:
 # 4.1 快捷按鈕邏輯 (Hot Spots)
 # ==========================================
 
-hot_spot_container = st.container()
 
-with hot_spot_container:
+
+    # 這裡建立一個空位，稍後 AI 生成的內容會「注入」到這裡
+    itinerary_placeholder = st.empty()
+
+
+with bottom_area:
     st.write("💡 **Hot spots**")
 
     # 初始化輸入緩存
