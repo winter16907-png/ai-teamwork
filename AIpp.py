@@ -317,13 +317,13 @@ if side_submit or user_input or st.session_state.temp_input:
             prompt_instruction = f"\n\n===IMAGE_PROMPTS===\n" + "\n".join(
                 [f"{i + 1}. [描述]" for i in range(max_images)]) + "\n===IMAGE_PROMPTS_END==="
 
-        query = f"從 {city_from} 到 {target_city} 的 {days} 天行程。主題:{','.join(theme)}，需求：{final_detail}{prompt_instruction}"
+        query = f"請用{user_lang}規劃從 {city_from} 到 {target_city} 的 {days} 天行程。需求：{final_detail}{prompt_instruction}"
 
         try:
             raw_itinerary, model_used = call_ai_with_fuse(query, model_map[selected_mode], SYSTEM_PROMPT)
             display_text = re.split(r"===IMAGE_PROMPTS===", raw_itinerary)[0].strip()
 
-            # 準備存入狀態
+            # 暫存結果到 Session，解決結果不見的問題
             st.session_state.current_output = {"text": display_text, "images": []}
 
             # 存入資料庫
@@ -332,29 +332,23 @@ if side_submit or user_input or st.session_state.temp_input:
                    "user_id": st.session_state.user_uuid}
             save_new_record_to_db(rec)
 
-            status.write(display_text)  # 在 status 內也顯示進度
+            status.write(display_text)
 
-            # 圖片生成邏輯
+            # 圖片生成
             img_match = re.search(r"===IMAGE_PROMPTS===(.*)===IMAGE_PROMPTS_END===", raw_itinerary, re.DOTALL)
             generated_imgs = []
             if img_match and max_images > 0:
                 p_list = [l.strip() for l in img_match.group(1).split("\n") if re.match(r"^\d", l.strip())][:max_images]
                 for p in p_list:
                     img_b = generate_flux_image(p, image_aspect)
-                    if img_b:
-                        generated_imgs.append(img_b)
+                    if img_b: generated_imgs.append(img_b)
 
-                # 更新圖片到狀態與資料庫
                 st.session_state.current_output["images"] = generated_imgs
                 update_db_images(raw_itinerary, generated_imgs)
 
             status.update(label=f"✅ Planned by {model_used}.", state="complete")
-
-            # 重要：更新歷史紀錄列表
             st.session_state.history = load_history_from_db(st.session_state.user_uuid)
-
-            # 手動觸發一次重新渲染以更新側邊欄，此時因為 current_output 已有值，結果不會不見
-            st.rerun()
+            st.rerun()  # 重新整理以同步顯示 current_output 和歷史紀錄
 
         except Exception as e:
             st.error(f"❌ Planning failed: {str(e)}")
