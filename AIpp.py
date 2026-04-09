@@ -504,6 +504,7 @@ with col2:
     # 這裡建立一個空位，稍後 AI 生成的內容會「注入」到這裡
     itinerary_placeholder = st.empty()
 
+<<<<<<< HEAD
 
 with bottom_area:
     st.write("💡 **Hot spots**")
@@ -531,6 +532,10 @@ with bottom_area:
             st.rerun()
 
     st.write(">**You are suggested to input parameters before clicking the tags**")
+=======
+st.write(">You are suggested to input parameters before clicking the tags ")
+st.write(">**You are suggested to input parameters before clicking the tags**")
+>>>>>>> parent of 8425145 (version bug solved)
 
 # 將 chat_input 的值與 session_state 綁定
 # 注意：Streamlit 的 chat_input 目前不直接支援 value 參數，
