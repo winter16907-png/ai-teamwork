@@ -377,10 +377,6 @@ with col1:
         """
 
     # 注入 CSS
-    st.markdown(glass_style, unsafe_allow_html=True)
-
-    # === 【核心步驟 1】移除原本的 st.info，改為在這裡內嵌提示文字 ===
-    # 使用容器
     st.markdown("""
             <div class="glass-container">
                 <h1>✈️ AI Trip Planner Pro</h1>
@@ -390,6 +386,9 @@ with col1:
                 </p>
             </div>
         """, unsafe_allow_html=True)
+
+    # === 【核心步驟 1】移除原本的 st.info，改為在這裡內嵌提示文字 ===
+    # 使用容器
 
     try:
         image_no = rnd.randint(1,2)
