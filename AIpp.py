@@ -126,13 +126,6 @@ def delete_user_history(user_id):
     conn.commit()
     conn.close()
 
-
-# 定義按鈕觸發的函式
-def set_prompt(prompt_text, dest_city):
-    st.session_state.temp_input = prompt_text
-    st.session_state.dest_state = dest_city  # 修改這裡，對應剛才建立的變數
-    st.rerun()
-
 # 初始化資料庫
 init_db()
 
@@ -279,13 +272,6 @@ with st.sidebar:
 # ==========================================
 # 4. 主頁面與邏輯
 # ==========================================
-main_area = st.container()   # 用來放標題和 AI 生成的結果
-bottom_area = st.container() # 專門用來放 Hot Spots
-
-with main_area:
-    # 這裡放你原本的 glass-container 標題
-    st.markdown("""<div class="glass-container">...</div>""", unsafe_allow_html=True)
-
 col1, col2 = st.columns([0.9, 0.1]) # 調整比例讓問號靠右
 
 with col1:
@@ -359,24 +345,14 @@ with col1:
                 background-color: rgba(255, 252, 240, 0.9) !important; /* 配地圖的復古米色 */
                 border-right: 1px solid rgba(0,0,0,0.05);
             }
-            /* 固定底部容器 */
-            .fixed-bottom {
-                position: fixed;
-                bottom: 100px; /* 根據輸入框高度調整，避開 chat_input */
-                left: 50%;
-                transform: translateX(-50%);
-                width: 80%;
-                z-index: 999;
-                background: rgba(255, 255, 255, 0.7);
-                backdrop-filter: blur(10px);
-                padding: 10px;
-                border-radius: 15px;
-                border: 1px solid rgba(255,255,255,0.3);
-            }
         </style>
         """
 
     # 注入 CSS
+    st.markdown(glass_style, unsafe_allow_html=True)
+
+    # === 【核心步驟 1】移除原本的 st.info，改為在這裡內嵌提示文字 ===
+    # 使用容器
     st.markdown("""
             <div class="glass-container">
                 <h1>✈️ AI Trip Planner Pro</h1>
@@ -386,9 +362,6 @@ with col1:
                 </p>
             </div>
         """, unsafe_allow_html=True)
-
-    # === 【核心步驟 1】移除原本的 st.info，改為在這裡內嵌提示文字 ===
-    # 使用容器
 
     try:
         image_no = rnd.randint(1,2)
@@ -498,44 +471,38 @@ with col2:
 # ==========================================
 # 4.1 快捷按鈕邏輯 (Hot Spots)
 # ==========================================
+st.write("💡 **Hot spots**")
 
+# 定義按鈕觸發的函式
+def set_prompt(prompt_text, dest_city):
+    st.session_state.temp_input = prompt_text
+    st.session_state.dest_state = dest_city  # 修改這裡，對應剛才建立的變數
+    st.rerun()
 
+# 初始化輸入緩存
+if "temp_input" not in st.session_state:
+    st.session_state.temp_input = ""
 
-    # 這裡建立一個空位，稍後 AI 生成的內容會「注入」到這裡
-    itinerary_placeholder = st.empty()
+cols = st.columns(4)
+with cols[0]:
+    if st.button("🇯🇵 #One-week Tokyo & Osaka trip", use_container_width=True):
+        set_prompt("I want to go to Tokyo and Osaka, please arrange an one-week itinerary that includes a Shinkansen transfer.", "HND")
+        st.rerun()
+with cols[1]:
+    if st.button("🇪🇺 #Travel around Europe for a month", use_container_width=True):
+        set_prompt("I want to visit England, France, Italy, Germany, and Finland for a month, with a relatively generous budget. Please plan a detailed itinerary.", "LHR")
+        st.rerun()
+with cols[2]:
+    if st.button("🇱🇻 #One-month Baltic States", use_container_width=True):
+        set_prompt("I want to visit the three Baltic states and experience the culture of Northern Europe.", "RIX")
+        st.rerun()
+with cols[3]:
+    if st.button("🏝️ #Hawaii Island Tour", use_container_width=True):
+        set_prompt("Hawaii island-hopping suggestions, including water activities and volcanic parks.", "HNL")
+        st.rerun()
 
-<<<<<<< HEAD
-
-with bottom_area:
-    st.write("💡 **Hot spots**")
-
-    # 初始化輸入緩存
-    if "temp_input" not in st.session_state:
-        st.session_state.temp_input = ""
-
-    cols = st.columns(4)
-    with cols[0]:
-        if st.button("🇯🇵 One-week Tokyo & Osaka trip", use_container_width=True):
-            set_prompt("I want to go to Tokyo and Osaka, please arrange an one-week itinerary that includes a Shinkansen transfer.", "HND")
-            st.rerun()
-    with cols[1]:
-        if st.button("🇪🇺 Travel around Europe for a month", use_container_width=True):
-            set_prompt("I want to visit England, France, Italy, Germany, and Finland for a month, with a relatively generous budget. Please plan a detailed itinerary.", "LHR")
-            st.rerun()
-    with cols[2]:
-        if st.button("🇱🇻 One-month Baltic States", use_container_width=True):
-            set_prompt("I want to visit the three Baltic states and experience the culture of Northern Europe.", "RIX")
-            st.rerun()
-    with cols[3]:
-        if st.button("🏝️ Hawaii Island Tour", use_container_width=True):
-            set_prompt("Hawaii island-hopping suggestions, including water activities and volcanic parks.", "HNL")
-            st.rerun()
-
-    st.write(">**You are suggested to input parameters before clicking the tags**")
-=======
 st.write(">You are suggested to input parameters before clicking the tags ")
 st.write(">**You are suggested to input parameters before clicking the tags**")
->>>>>>> parent of 8425145 (version bug solved)
 
 # 將 chat_input 的值與 session_state 綁定
 # 注意：Streamlit 的 chat_input 目前不直接支援 value 參數，
