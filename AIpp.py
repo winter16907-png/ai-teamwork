@@ -230,7 +230,7 @@ with st.sidebar:
         theme = st.pills(label="Theme", options=["Take Photos", "Enjoy Cuisines", "Theme Park", "Museum", "Shopping", "Vacation"],
                          selection_mode="multi")
         budget = st.number_input(f"Total Budget ({user_currency})", step=2000, key="budget_input")
-        no_ppl = st.number_input("Number of people", step=1, key="no_ppl_input")
+        no_ppl = st.number_input("Number of people", min_value=1 ,step=1, key="no_ppl_input")
         st.button("Predict budget for me", use_container_width=True, on_click=reset_budget_callback)
         st.divider()
         max_images = st.slider("🖼️Images count", 0, 2, 1)
