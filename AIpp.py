@@ -227,7 +227,7 @@ with st.sidebar:
         city_from = st.text_input("Departure", value="Hong Kong", key="input_city_from")
         city_to = st.text_input("Destination", value=st.session_state.dest_state)
         days = st.number_input("Days", min_value=1, value=2, key="input_days")
-        theme = st.pills(label="Theme", options=["🌇 Take Photos", "🍕 Enjoy Cuisines", "🎢 Theme Park", "🏛️ Museum", "🛍️ shopping", "🏖️ vacation"],
+        theme = st.pills(label="Theme", options=["Take Photos", "Enjoy Cuisines", "Theme Park", "Museum", "Shopping", "vacation"],
                          selection_mode="multi")
         budget = st.number_input(f"Budget ({user_currency})", step=2000, key="budget_input")
         st.button("Predict budget for me", use_container_width=True, on_click=reset_budget_callback)
