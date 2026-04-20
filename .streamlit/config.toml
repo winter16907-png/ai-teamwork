@@ -1,0 +1,7 @@
+[theme]
+primaryColor = "#FF4B4B"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F2F6"
+textColor = "#31333F"
+font = "sans serif"
+base = "light"  # 這裡強制設定為 light 模式，就不會被手機深色模式干擾了
