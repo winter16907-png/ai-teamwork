@@ -229,7 +229,8 @@ with st.sidebar:
         days = st.number_input("Days", min_value=1, value=2, key="input_days")
         theme = st.pills(label="Theme", options=["Take Photos", "Enjoy Cuisines", "Theme Park", "Museum", "Shopping", "Vacation"],
                          selection_mode="multi")
-        budget = st.number_input(f"Budget ({user_currency})", step=2000, key="budget_input")
+        budget = st.number_input(f"Total Budget ({user_currency})", step=2000, key="budget_input")
+        no_ppl = st.number_input("Number of people", step=1, key="no_ppl_input")
         st.button("Predict budget for me", use_container_width=True, on_click=reset_budget_callback)
         st.divider()
         max_images = st.slider("🖼️Images count", 0, 2, 1)
@@ -559,7 +560,7 @@ if side_submit or user_input:
         placeholders = "\n".join([f"{i + 1}. [描述]" for i in range(max_images)])
         prompt_instruction = f"\n\n請在結束後緊接著輸出此格式：\n===IMAGE_PROMPTS===\n{placeholders}\n===IMAGE_PROMPTS_END==="
 
-    query = f"請用{user_lang}規劃從 {city_from} 到 {city_to} 的 {days} 天行程。主題是{','.join(theme)}預算 {budget}{user_currency}。優先滿足這些需求：{user_input}{prompt_instruction}"
+    query = f"請用{user_lang}規劃從 {city_from} 到 {city_to} 的 {days} 天的{no_ppl}人行程。主題是{','.join(theme)}預算 {budget}{user_currency}。優先滿足這些需求：{user_input}{prompt_instruction}"
 
     try:
         raw_itinerary, model_used = call_ai_with_fuse(query, model_map[selected_mode], SYSTEM_PROMPT)
