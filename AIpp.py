@@ -357,8 +357,8 @@ with col1:
     st.markdown("""
             <div class="glass-container">
                 <h1>✈️ AI Trip Planner Pro</h1>
-                <p>If you face any obstacles, please feel free to contact me at dolphinfin7751@carpkingdom.com</p>
-                <blockquote>developed by kalokwong6's team</blockquote>
+                <blockquote>If you face any obstacles, please feel free to contact me at dolphinfin7751@carpkingdom.com</blockquote>
+                <p>developed by kalokwong6's team</p>
                 <p style="margin-top: 20px; font-size: 0.8rem; color: #004085; opacity: 0.7;">
                     ℹ️ This is an AI, and the information provided may be inaccurate.
                 </p>
