@@ -388,6 +388,7 @@ with col2:
         tab1, tab2, tab3 = st.tabs(["🚀 Quick Start", "🛠️ Settings", "🔍 Prompt Tips"])
         with tab1:
             st.markdown("# About AI Trip Planner")
+            st.write(">If you face any obstacles, please feel free to contact me at dolphinfin7751@carpkingdom.com")
             st.markdown("## 1.Introduction")
             st.write(">This is an intelligent travel planning tool based on the OpenRouter API.")
             st.write("The AI trip planner is equipped with top-notch image generation model")
